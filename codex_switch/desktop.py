@@ -11,6 +11,9 @@ from typing import Callable, Mapping, Optional
 from .store import CodexSwitchError
 
 
+WINDOWS_CODEX_EXE_ENV = "CODEX_DESKTOP_EXE"
+
+
 def restart_codex_desktop(
     *,
     system: Optional[str] = None,
@@ -98,20 +101,40 @@ def _restart_windows(
 
 
 def _windows_codex_candidates(environ: Mapping[str, str]) -> list[Path]:
+    configured_exe = environ.get(WINDOWS_CODEX_EXE_ENV)
     local_app_data = environ.get("LOCALAPPDATA")
     program_files = environ.get("ProgramFiles")
     program_files_x86 = environ.get("ProgramFiles(x86)")
     candidates = []
+    if configured_exe:
+        candidates.append(Path(configured_exe).expanduser())
     if local_app_data:
         local = Path(local_app_data)
         candidates.extend(
             [
                 local / "Programs" / "Codex" / "Codex.exe",
+                local / "Programs" / "codex" / "Codex.exe",
+                local / "Programs" / "OpenAI Codex" / "Codex.exe",
+                local / "Programs" / "OpenAI" / "Codex" / "Codex.exe",
                 local / "Codex" / "Codex.exe",
             ]
         )
     if program_files:
-        candidates.append(Path(program_files) / "Codex" / "Codex.exe")
+        root = Path(program_files)
+        candidates.extend(
+            [
+                root / "Codex" / "Codex.exe",
+                root / "OpenAI Codex" / "Codex.exe",
+                root / "OpenAI" / "Codex" / "Codex.exe",
+            ]
+        )
     if program_files_x86:
-        candidates.append(Path(program_files_x86) / "Codex" / "Codex.exe")
+        root = Path(program_files_x86)
+        candidates.extend(
+            [
+                root / "Codex" / "Codex.exe",
+                root / "OpenAI Codex" / "Codex.exe",
+                root / "OpenAI" / "Codex" / "Codex.exe",
+            ]
+        )
     return candidates

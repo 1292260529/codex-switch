@@ -39,6 +39,31 @@ class DesktopRestartTest(unittest.TestCase):
             self.assertEqual(run_calls[0], ["taskkill", "/IM", "Codex.exe", "/F", "/T"])
             self.assertEqual(popen_calls, [[str(exe)]])
 
+    def test_windows_restarts_from_configured_exe(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            exe = Path(tmp) / "Custom Codex" / "Codex.exe"
+            exe.parent.mkdir(parents=True)
+            exe.write_text("", encoding="utf-8")
+            popen_calls = []
+
+            def runner(args, **kwargs):
+                return self.completed(args)
+
+            def popener(args, **kwargs):
+                popen_calls.append(args)
+                return object()
+
+            result = restart_codex_desktop(
+                system="Windows",
+                runner=runner,
+                popener=popener,
+                sleeper=lambda seconds: None,
+                environ={"CODEX_DESKTOP_EXE": str(exe)},
+            )
+
+            self.assertEqual(result, "restarted Codex Desktop")
+            self.assertEqual(popen_calls, [[str(exe)]])
+
     def test_windows_falls_back_to_start_command(self):
         run_calls = []
         popen_calls = []

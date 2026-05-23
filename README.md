@@ -168,6 +168,23 @@ codex-switch use user@example.com
 
 Windows 下，`use`、`auto` 和 `prepare-add` 默认会关闭 `Codex.exe`，然后尝试从常见安装位置重新打开 Codex Desktop。如果没有找到安装路径，会回退到系统的 `start Codex` 命令。
 
+如果点击图形界面的“准备添加”后提示 `Windows 找不到文件 'Codex'`，说明 Codex Desktop 没有安装在工具默认搜索的位置，也没有注册到系统命令。可以把 Codex Desktop 的真实 exe 路径配置到环境变量 `CODEX_DESKTOP_EXE`。
+
+临时只对当前 PowerShell 窗口生效：
+
+```powershell
+$env:CODEX_DESKTOP_EXE = "C:\Users\你的用户名\AppData\Local\Programs\Codex\Codex.exe"
+codex-switch-gui
+```
+
+永久写入当前用户环境变量：
+
+```powershell
+setx CODEX_DESKTOP_EXE "C:\Users\你的用户名\AppData\Local\Programs\Codex\Codex.exe"
+```
+
+执行 `setx` 后，需要重新打开终端或重新启动图形界面，让新环境变量生效。路径要替换成你电脑上真实存在的 `Codex.exe` 路径。
+
 如果不想自动重启桌面端：
 
 ```powershell
