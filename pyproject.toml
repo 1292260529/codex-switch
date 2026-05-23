@@ -1,0 +1,14 @@
+[project]
+name = "codex-switch"
+version = "0.1.0"
+description = "Local Codex account pool switcher"
+requires-python = ">=3.9"
+dependencies = []
+
+[project.scripts]
+codex-switch = "codex_switch.cli:main"
+codex-switch-gui = "codex_switch.gui:main"
+
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
