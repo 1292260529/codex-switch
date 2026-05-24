@@ -64,6 +64,30 @@ class DesktopRestartTest(unittest.TestCase):
             self.assertEqual(result, "restarted Codex Desktop")
             self.assertEqual(popen_calls, [[str(exe)]])
 
+    def test_windows_restarts_from_configured_store_app_id(self):
+        popen_calls = []
+
+        def runner(args, **kwargs):
+            return self.completed(args)
+
+        def popener(args, **kwargs):
+            popen_calls.append(args)
+            return object()
+
+        result = restart_codex_desktop(
+            system="Windows",
+            runner=runner,
+            popener=popener,
+            sleeper=lambda seconds: None,
+            environ={"CODEX_DESKTOP_APP_ID": "OpenAI.Codex_abc123!App"},
+        )
+
+        self.assertEqual(result, "restarted Codex Desktop")
+        self.assertEqual(
+            popen_calls,
+            [["explorer.exe", "shell:AppsFolder\\OpenAI.Codex_abc123!App"]],
+        )
+
     def test_windows_falls_back_to_start_command(self):
         run_calls = []
         popen_calls = []

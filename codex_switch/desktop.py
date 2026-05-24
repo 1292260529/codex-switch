@@ -12,6 +12,7 @@ from .store import CodexSwitchError
 
 
 WINDOWS_CODEX_EXE_ENV = "CODEX_DESKTOP_EXE"
+WINDOWS_CODEX_APP_ID_ENV = "CODEX_DESKTOP_APP_ID"
 
 
 def restart_codex_desktop(
@@ -91,6 +92,14 @@ def _restart_windows(
     codex_exe = shutil.which("Codex.exe")
     if codex_exe:
         popener([codex_exe], close_fds=True)
+        return "restarted Codex Desktop"
+
+    configured_app_id = environ.get(WINDOWS_CODEX_APP_ID_ENV)
+    if configured_app_id:
+        popener(
+            ["explorer.exe", f"shell:AppsFolder\\{configured_app_id}"],
+            close_fds=True,
+        )
         return "restarted Codex Desktop"
 
     try:

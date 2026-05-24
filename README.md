@@ -166,9 +166,32 @@ codex-switch list
 codex-switch use user@example.com
 ```
 
-Windows 下，`use`、`auto` 和 `prepare-add` 默认会关闭 `Codex.exe`，然后尝试从常见安装位置重新打开 Codex Desktop。如果没有找到安装路径，会回退到系统的 `start Codex` 命令。
+Windows 下，`use`、`auto` 和 `prepare-add` 默认会关闭 `Codex.exe`，然后尝试从常见安装位置重新打开 Codex Desktop。如果没有找到安装路径，会尝试使用 Microsoft Store 应用 ID，最后再回退到系统的 `start Codex` 命令。
 
-如果点击图形界面的“准备添加”后提示 `Windows 找不到文件 'Codex'`，说明 Codex Desktop 没有安装在工具默认搜索的位置，也没有注册到系统命令。可以把 Codex Desktop 的真实 exe 路径配置到环境变量 `CODEX_DESKTOP_EXE`。
+如果 Codex Desktop 是从 Microsoft Store 安装的，通常不容易找到普通的 `Codex.exe`。这时可以先在 PowerShell 里查 Codex 的应用 ID：
+
+```powershell
+Get-StartApps | Where-Object { $_.Name -like "*Codex*" }
+```
+
+输出里会有 `Name` 和 `AppID`。把 `AppID` 配置到环境变量 `CODEX_DESKTOP_APP_ID`。
+
+临时只对当前 PowerShell 窗口生效：
+
+```powershell
+$env:CODEX_DESKTOP_APP_ID = "查询到的AppID"
+codex-switch-gui
+```
+
+永久写入当前用户环境变量：
+
+```powershell
+setx CODEX_DESKTOP_APP_ID "查询到的AppID"
+```
+
+执行 `setx` 后，需要重新打开终端或重新启动图形界面，让新环境变量生效。
+
+如果你安装的是普通 exe 版本，也可以把 Codex Desktop 的真实 exe 路径配置到环境变量 `CODEX_DESKTOP_EXE`。
 
 临时只对当前 PowerShell 窗口生效：
 
